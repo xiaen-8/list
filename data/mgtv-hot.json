@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-10-13 16:26:34",
+  "last_updated": "2026-10-14 03:27:18",
   "tv": [
     {
       "id": "333350",
@@ -548,7 +548,7 @@
       "description": "曾经的财经主播张冉因不甘海外代购的平凡生活，手握一封国内MCN公司的offer拉着丈夫付玉东回国成为搞笑“网红”，不想装修工丈夫竟先她一步乘上风口，成为创业公司的“吉祥物CEO”。夫妻二人分别开启戏谑的升级打怪之旅，在迷失中寻回初心与爱。",
       "rating": 8.0,
       "voteCount": 2,
-      "popularity": 4.0035,
+      "popularity": 4.4943,
       "releaseDate": "2025-12-01",
       "lastUpdateDate": "2025-12-19",
       "posterPath": "/z4VxM7sYvEsTu1kgav0AFtu52QT.jpg",
@@ -578,7 +578,7 @@
       "description": "大学肄业生李陌川拥有能够预知危险的超感力，但他只想安稳地和相依为命的姐姐把日子过好。然而，麻烦和危险却接踵而至，甚至日渐致命！此时，他遇到了一名掌管着一家神秘物流公司的年轻女子，柳昔希。柳昔希自称来自一百年后，而李陌川竟是未来全人类的公敌……",
       "rating": 0.0,
       "voteCount": 0,
-      "popularity": 0.6513,
+      "popularity": 0.6442,
       "releaseDate": "2025-11-25",
       "lastUpdateDate": "2025-11-27",
       "posterPath": "/adjNAvEgD9XVRK8GcWu4HUyK4Z1.jpg",
@@ -1309,36 +1309,6 @@
       "genreTitle": "真人秀"
     },
     {
-      "id": "331569",
-      "type": "tmdb",
-      "title": "不想睡的星期五",
-      "description": "《不想睡的星期五》解锁不同城市夜生活玩法，打造最具城市灵魂的夜间大事件，每一夜都有新发现！全新定义新奇五夜生活，打造可复制的“最夯青年夜生活图鉴”。拒绝白天社会人面具，直击当代青年集体共鸣——夜晚不是一天的终点，而是属于“我自己”的新起点！",
-      "rating": 0.0,
-      "voteCount": 0,
-      "popularity": 5.0433,
-      "releaseDate": "2026-08-14",
-      "lastUpdateDate": "2026-10-02",
-      "posterPath": "/ladRcczkCEFXFxycIleWgx9yV5q.jpg",
-      "backdropPath": "/y8kPD0sQqlL8lo7oYZVtYWP330Y.jpg",
-      "mediaType": "tv",
-      "genreTitle": "真人秀"
-    },
-    {
-      "id": "278513",
-      "type": "tmdb",
-      "title": "我在中国当农人",
-      "description": "《我在中国当农人》是一档国际“新农人”创业真人秀节目，旨在从世界青年的角度探索中国乡村创业新模式、促进中外文化交流。6个不同国家、不同职业和身份的友人组成了一支充满创意与激情的“跨国新农人创业团”，在中国常德桃花源这片充满诗意的土地上，以世界的眼光深度体验中国乡村生活，以“新农人”的身份开创乡村创业模式。",
-      "rating": 0.0,
-      "voteCount": 0,
-      "popularity": 0.8961,
-      "releaseDate": "2024-11-25",
-      "lastUpdateDate": "2026-10-05",
-      "posterPath": "/7y9B37zqnTY4XSPY4qMnp8uRwJV.jpg",
-      "backdropPath": "/aPUiEgfN1gAqyuvB0ISmxYQHTyJ.jpg",
-      "mediaType": "tv",
-      "genreTitle": "真人秀"
-    },
-    {
       "id": "235912",
       "type": "tmdb",
       "title": "去“湘”当有味的地方",
@@ -1354,6 +1324,21 @@
       "genreTitle": "真人秀"
     },
     {
+      "id": "331569",
+      "type": "tmdb",
+      "title": "不想睡的星期五",
+      "description": "《不想睡的星期五》解锁不同城市夜生活玩法，打造最具城市灵魂的夜间大事件，每一夜都有新发现！全新定义新奇五夜生活，打造可复制的“最夯青年夜生活图鉴”。拒绝白天社会人面具，直击当代青年集体共鸣——夜晚不是一天的终点，而是属于“我自己”的新起点！",
+      "rating": 0.0,
+      "voteCount": 0,
+      "popularity": 5.0433,
+      "releaseDate": "2026-08-14",
+      "lastUpdateDate": "2026-10-02",
+      "posterPath": "/ladRcczkCEFXFxycIleWgx9yV5q.jpg",
+      "backdropPath": "/y8kPD0sQqlL8lo7oYZVtYWP330Y.jpg",
+      "mediaType": "tv",
+      "genreTitle": "真人秀"
+    },
+    {
       "id": "126490",
       "type": "tmdb",
       "title": "我家那闺女",
@@ -1365,6 +1350,21 @@
       "lastUpdateDate": "2026-10-04",
       "posterPath": "/8gV9bRO0jVhjOPGD2s2HzyWtl9V.jpg",
       "backdropPath": "/yA4mTJfmB0hwslIJPMZXeYbtj0k.jpg",
+      "mediaType": "tv",
+      "genreTitle": "真人秀"
+    },
+    {
+      "id": "278513",
+      "type": "tmdb",
+      "title": "我在中国当农人",
+      "description": "《我在中国当农人》是一档国际“新农人”创业真人秀节目，旨在从世界青年的角度探索中国乡村创业新模式、促进中外文化交流。6个不同国家、不同职业和身份的友人组成了一支充满创意与激情的“跨国新农人创业团”，在中国常德桃花源这片充满诗意的土地上，以世界的眼光深度体验中国乡村生活，以“新农人”的身份开创乡村创业模式。",
+      "rating": 0.0,
+      "voteCount": 0,
+      "popularity": 0.8961,
+      "releaseDate": "2024-11-25",
+      "lastUpdateDate": "2026-10-05",
+      "posterPath": "/7y9B37zqnTY4XSPY4qMnp8uRwJV.jpg",
+      "backdropPath": "/aPUiEgfN1gAqyuvB0ISmxYQHTyJ.jpg",
       "mediaType": "tv",
       "genreTitle": "真人秀"
     },
