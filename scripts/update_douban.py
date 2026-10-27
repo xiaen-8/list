@@ -8,7 +8,7 @@ import re  # 🔴 必须引入正则模块来清洗标题
 # --- 配置区 ---
 TMDB_API_KEY = os.environ.get('TMDB_API_KEY')
 DATA_DIR = "data"
-OUTPUT_FILE = os.path.join(DATA_DIR, "douban-hot.json")
+OUTPUT_FILE = os.path.join(DATA_DIR, "douban.json")
 
 # 豆瓣内部隐藏 API
 DB_BASE_URL = "https://m.douban.com/rexxar/api/v2/subject/recent_hot/tv"
