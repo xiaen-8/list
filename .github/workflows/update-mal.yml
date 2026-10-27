@@ -1,0 +1,44 @@
+name: 🌸 Update MAL Airing
+
+on:
+  schedule:
+    # 每天北京时间上午 11:10 自动更新 (UTC 时间 03:10)
+    - cron: '10 3 * * *'
+  workflow_dispatch: # 允许在 Actions 页面手动点击运行
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    # 防止官方弃用 Node.js 20 导致警告的修复代码
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: 📥 检出代码
+        uses: actions/checkout@v4
+
+      - name: 🐍 设置 Python 环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 📦 安装依赖库
+        run: |
+          python -m pip install --upgrade pip
+          pip install aiohttp
+
+      - name: 🚀 运行抓取脚本
+        env:
+          # TMDB 匹配用（仓库 Secrets 已有）
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+        run: |
+          python scripts/update_mal.py
+
+      - name: 📤 提交并推送到 GitHub
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add data/mal.json
+          # 如果有变化则提交并推送（push 前先 rebase，避免与其它 workflow 同时推送时被拒）
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: 自动更新 MAL 热播数据 🌸" && git pull --rebase origin main && git push)
