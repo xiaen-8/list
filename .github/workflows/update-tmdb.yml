@@ -39,6 +39,6 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
-          git add data/tmdb-rank.json
+          git add data/tmdb.json
           # 如果有变化则提交并推送（push 前先 rebase，避免与其它 workflow 同时推送时被拒）
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: 自动更新 TMDB 榜单数据 🎬" && git pull --rebase origin main && git push)
