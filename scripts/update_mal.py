@@ -1,5 +1,5 @@
 """MAL 热播番剧（MyAnimeList），写入 data/mal.json。
-走 Jikan 免费 API 取 top anime（filter=airing），逐条回 TMDB 匹配动画（题材须含 16），
+抓 myanimelist.net 热播榜 HTML（topanime?type=airing，Jikan 在 Actions 出口超时不可用），逐条回 TMDB 匹配动画（题材须含 16），
 字段与现有 data/*-hot.json 兼容，widget 端复用同一套 toVideo/sortItems。
 密钥：TMDB_API_KEY（仓库 secrets 已有，仅用于匹配）。"""
 import asyncio
@@ -93,6 +93,42 @@ async def match_anime(session, titles, cache):
     return info
 
 
+async def fetch_mal_rows(session):
+    """抓 MAL 热播榜页面并解析 ranking-list 行（与 VPS 版 mal.js 同源同解析）"""
+    for attempt in range(3):
+        try:
+            async with session.get("https://myanimelist.net/topanime.php?type=airing", headers=HEADERS) as resp:
+                if resp.status != 200:
+                    print(f"❌ MAL 页面返回 {resp.status}（第 {attempt + 1} 次）")
+                    await asyncio.sleep(5)
+                    continue
+                html = await resp.text()
+            rows = re.findall(r'<tr[^>]*class="ranking-list"[^>]*>(.*?)</tr>', html, re.S)
+            out = []
+            for row in rows[:25]:
+                rank_m = re.search(r'top-anime-rank-text[^>]*>\s*(\d+)', row)
+                title_m = re.search(r'anime_ranking_h3"><a[^>]*>(.*?)</a>', row, re.S)
+                if not title_m:
+                    continue
+                title = re.sub(r"<[^>]+>", "", title_m.group(1)).strip()
+                score_m = re.search(r'score-label[^>]*>(\d+\.\d+)', row) or re.search(r'class="score[^"]*"[^>]*>[\s\S]*?(\d+\.\d+)', row)
+                mem_m = re.search(r'([\d,]+)\s*members', row)
+                out.append({
+                    "title_english": title,
+                    "title": title,
+                    "title_japanese": "",
+                    "score": float(score_m.group(1)) if score_m else 0,
+                    "members": int(mem_m.group(1).replace(",", "")) if mem_m else 0,
+                    "rank": int(rank_m.group(1)) if rank_m else len(out) + 1,
+                })
+            print(f"✅ MAL 页面解析到 {len(out)} 条")
+            return out
+        except Exception as e:
+            print(f"❌ MAL 页面请求异常（第 {attempt + 1} 次）: {e}")
+            await asyncio.sleep(5)
+    return []
+
+
 async def main():
     if not TMDB_API_KEY:
         print("❌ 错误: 未检测到 TMDB_API_KEY 环境变量！")
@@ -102,18 +138,7 @@ async def main():
     cache = {}
     connector = aiohttp.TCPConnector(family=socket.AF_INET)
     async with aiohttp.ClientSession(connector=connector) as session:
-        raw_list = []
-        for attempt in range(3):
-            try:
-                async with session.get("https://api.jikan.moe/v4/top/anime", params={"filter": "airing", "limit": 25}, headers=HEADERS) as resp:
-                    if resp.status != 200:
-                        print(f"❌ Jikan 返回 {resp.status}（第 {attempt + 1} 次）")
-                    else:
-                        raw_list = (await resp.json()).get("data") or []
-                        break
-            except Exception as e:
-                print(f"❌ Jikan 请求异常（第 {attempt + 1} 次）: {e}")
-            await asyncio.sleep(5)
+        raw_list = await fetch_mal_rows(session)
         for raw in raw_list:
             titles = [raw.get("title_english"), raw.get("title"), raw.get("title_japanese")]
             info = await match_anime(session, titles, cache)
@@ -129,7 +154,7 @@ async def main():
                 "malTitle": raw.get("title_english") or raw.get("title") or "",
                 **info,
             })
-            await asyncio.sleep(0.4)  # Jikan 限流礼貌间隔
+            await asyncio.sleep(0.3)
     final_result = {
         "source": "MyAnimeList",
         "last_updated": datetime.datetime.now(tz_bj).strftime("%Y-%m-%d %H:%M:%S"),
