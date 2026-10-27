@@ -20,10 +20,10 @@ tz_bj = datetime.timezone(datetime.timedelta(hours=8))
 
 # (分类名, TMDB 路径, 媒体类型) —— 与 Rex首页 RexHomeTmdbPicks 一一对应
 FEEDS = [
-    ("tv", "tv", "trending"),
-    ("movie", "movie", "trending"),
-    ("tv_popular", "tv", "popular"),
-    ("movie_popular", "movie", "popular"),
+    ("tv", "/trending/tv/week", "tv"),
+    ("movie", "/trending/movie/week", "movie"),
+    ("tv_popular", "/tv/popular", "tv"),
+    ("movie_popular", "/movie/popular", "movie"),
 ]
 
 GENRE_MAP = {28: "动作", 12: "冒险", 16: "动画", 35: "喜剧", 80: "犯罪", 99: "纪录片", 18: "剧情", 10751: "家庭", 14: "奇幻", 36: "历史", 27: "恐怖", 10402: "音乐", 9648: "悬疑", 10749: "爱情", 878: "科幻", 10770: "电视电影", 53: "惊悚", 10752: "战争", 37: "西部", 10759: "动作冒险", 10762: "儿童", 10763: "新闻", 10764: "真人秀", 10765: "科幻奇幻", 10766: "肥皂剧", 10767: "脱口秀", 10768: "战争政治"}
@@ -108,9 +108,8 @@ async def main():
             categories[name] = await fetch_feed(session, name, path, media)
             await asyncio.sleep(0.3)
     final_result = {
-        "source": "TMDB",
         "last_updated": datetime.datetime.now(tz_bj).strftime("%Y-%m-%d %H:%M:%S"),
-        "categories": categories,
+        **categories,
     }
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(final_result, f, ensure_ascii=False, indent=2)
