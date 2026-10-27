@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>全站榜单 · 各源状态</title>
+<style>
+  body { background:#0d1117; color:#e6edf3; font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif; margin:0; padding:24px 16px; }
+  .card { max-width:760px; margin:0 auto; background:#151a23; border:1px solid #232a35; border-radius:14px; padding:20px; }
+  h1 { font-size:18px; margin:0 0 4px; }
+  .sub { color:#8b949e; font-size:12px; margin-bottom:16px; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:10px 8px; border-bottom:1px solid #232a35; }
+  th { color:#8b949e; font-weight:500; }
+  .badge { padding:2px 10px; border-radius:999px; font-size:12px; }
+  .badge.ok { background:#0f2e1d; color:#3fb950; }
+  .badge.bad { background:#2e1a0f; color:#d29922; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>各源状态</h1>
+  <div class="sub">全站榜单（GitHub 版）· 生成于 2026-10-27 17:53:02（北京时间）</div>
+  <table>
+    <tr><th>数据源</th><th>状态</th><th>条数</th><th>上次抓取</th></tr>
+    <tr><td>骨朵热度</td><td><span class="badge ok">正常</span></td><td>74</td><td>2026-10-26 23:45:02</td></tr>
+<tr><td>豆瓣热榜</td><td><span class="badge ok">正常</span></td><td>316</td><td>2026-10-27 11:28:16</td></tr>
+<tr><td>芒果TV</td><td><span class="badge ok">正常</span></td><td>133</td><td>2026-10-27 13:23:40</td></tr>
+<tr><td>剧场平台</td><td><span class="badge ok">正常</span></td><td>381</td><td>2026-10-27 16:15:20</td></tr>
+<tr><td>热门番剧</td><td><span class="badge ok">正常</span></td><td>112</td><td>2026-10-27 13:46:45</td></tr>
+<tr><td>TMDB 榜单</td><td><span class="badge ok">正常</span></td><td>140</td><td>2026-10-27 17:36:03</td></tr>
+<tr><td>Netflix 周榜</td><td><span class="badge ok">正常</span></td><td>25</td><td>2026-10-27 17:51:20</td></tr>
+  </table>
+</div>
+<script type="application/json" id="status-data">{"generated_at": "2026-10-27 17:53:02", "sources": [{"title": "骨朵热度", "file": "guduo-hot.json", "count": 74, "updated": "2026-10-26 23:45:02", "ok": true}, {"title": "豆瓣热榜", "file": "douban-hot.json", "count": 316, "updated": "2026-10-27 11:28:16", "ok": true}, {"title": "芒果TV", "file": "mgtv-hot.json", "count": 133, "updated": "2026-10-27 13:23:40", "ok": true}, {"title": "剧场平台", "file": "theater-data.json", "count": 381, "updated": "2026-10-27 16:15:20", "ok": true}, {"title": "热门番剧", "file": "bangumi-hot.json", "count": 112, "updated": "2026-10-27 13:46:45", "ok": true}, {"title": "TMDB 榜单", "file": "tmdb-rank.json", "count": 140, "updated": "2026-10-27 17:36:03", "ok": true}, {"title": "Netflix 周榜", "file": "netflix-weekly.json", "count": 25, "updated": "2026-10-27 17:51:20", "ok": true}]}</script>
+</body>
+</html>
