@@ -9,7 +9,7 @@ import datetime
 # --- 配置区 ---
 TMDB_API_KEY = os.environ.get('TMDB_API_KEY')
 DATA_DIR = "data"
-OUTPUT_FILE = os.path.join(DATA_DIR, "theater-data.json")
+OUTPUT_FILE = os.path.join(DATA_DIR, "theater.json")
 
 # TMDB 类型映射表
 GENRE_MAP = {
