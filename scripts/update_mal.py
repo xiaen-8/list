@@ -8,6 +8,7 @@ import json
 import os
 import re
 import datetime
+import socket
 
 TMDB_API_KEY = os.environ.get('TMDB_API_KEY')
 DATA_DIR = "data"
@@ -99,17 +100,20 @@ async def main():
     os.makedirs(DATA_DIR, exist_ok=True)
     items = []
     cache = {}
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.get("https://api.jikan.moe/v4/top/anime", params={"filter": "airing", "limit": 25}, headers=HEADERS) as resp:
-                if resp.status != 200:
-                    print(f"❌ Jikan 返回 {resp.status}")
-                    raw_list = []
-                else:
-                    raw_list = (await resp.json()).get("data") or []
-        except Exception as e:
-            print(f"❌ Jikan 请求异常: {e}")
-            raw_list = []
+    connector = aiohttp.TCPConnector(family=socket.AF_INET)
+    async with aiohttp.ClientSession(connector=connector) as session:
+        raw_list = []
+        for attempt in range(3):
+            try:
+                async with session.get("https://api.jikan.moe/v4/top/anime", params={"filter": "airing", "limit": 25}, headers=HEADERS) as resp:
+                    if resp.status != 200:
+                        print(f"❌ Jikan 返回 {resp.status}（第 {attempt + 1} 次）")
+                    else:
+                        raw_list = (await resp.json()).get("data") or []
+                        break
+            except Exception as e:
+                print(f"❌ Jikan 请求异常（第 {attempt + 1} 次）: {e}")
+            await asyncio.sleep(5)
         for raw in raw_list:
             titles = [raw.get("title_english"), raw.get("title"), raw.get("title_japanese")]
             info = await match_anime(session, titles, cache)
