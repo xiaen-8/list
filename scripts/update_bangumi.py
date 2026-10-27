@@ -9,7 +9,7 @@ import datetime
 # --- 配置区 ---
 TMDB_API_KEY = os.environ.get('TMDB_API_KEY')
 DATA_DIR = "data"
-OUTPUT_FILE = os.path.join(DATA_DIR, "bangumi-hot.json")
+OUTPUT_FILE = os.path.join(DATA_DIR, "bangumi.json")
 
 # Bangumi 抓取页数 (每页24条，抓5页 = 120部热门动漫)
 PAGES_TO_FETCH = 5 
