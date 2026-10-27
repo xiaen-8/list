@@ -14,19 +14,16 @@ import datetime
 
 TMDB_API_KEY = os.environ.get('TMDB_API_KEY')
 DATA_DIR = "data"
-OUTPUT_FILE = os.path.join(DATA_DIR, "tmdb-rank.json")
+OUTPUT_FILE = os.path.join(DATA_DIR, "tmdb.json")
 
 tz_bj = datetime.timezone(datetime.timedelta(hours=8))
 
 # (分类名, TMDB 路径, 媒体类型) —— 与 Rex首页 RexHomeTmdbPicks 一一对应
 FEEDS = [
-    ("本周电影趋势", "/trending/movie/week", "movie"),
-    ("本周剧集趋势", "/trending/tv/week", "tv"),
-    ("热门电影", "/movie/popular", "movie"),
-    ("热门剧集", "/tv/popular", "tv"),
-    ("高分电影", "/movie/top_rated", "movie"),
-    ("高分剧集", "/tv/top_rated", "tv"),
-    ("正在上映", "/movie/now_playing", "movie"),
+    ("tv", "tv", "trending"),
+    ("movie", "movie", "trending"),
+    ("tv_popular", "tv", "popular"),
+    ("movie_popular", "movie", "popular"),
 ]
 
 GENRE_MAP = {28: "动作", 12: "冒险", 16: "动画", 35: "喜剧", 80: "犯罪", 99: "纪录片", 18: "剧情", 10751: "家庭", 14: "奇幻", 36: "历史", 27: "恐怖", 10402: "音乐", 9648: "悬疑", 10749: "爱情", 878: "科幻", 10770: "电视电影", 53: "惊悚", 10752: "战争", 37: "西部", 10759: "动作冒险", 10762: "儿童", 10763: "新闻", 10764: "真人秀", 10765: "科幻奇幻", 10766: "肥皂剧", 10767: "脱口秀", 10768: "战争政治"}
