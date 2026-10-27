@@ -8,7 +8,7 @@ import datetime
 # --- 1. 核心配置区 ---
 TMDB_API_KEY = os.environ.get('TMDB_API_KEY')
 DATA_DIR = "data"
-OUTPUT_FILE = os.path.join(DATA_DIR, "guduo-hot.json")
+OUTPUT_FILE = os.path.join(DATA_DIR, "guduo.json")
 
 # 自动计算北京时间“昨天”的日期 (骨朵最新数据只有前一天的)
 tz_bj = datetime.timezone(datetime.timedelta(hours=8))
