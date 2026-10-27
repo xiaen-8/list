@@ -4,12 +4,16 @@ on:
   # 任一数据源文件被推送后自动重建状态页（status.html 不在 data/ 下，不会自触发）
   push:
     paths:
-      - 'data/guduo-hot.json'
-      - 'data/douban-hot.json'
-      - 'data/mgtv-hot.json'
-      - 'data/theater-data.json'
-      - 'data/bangumi-hot.json'
-      - 'data/tmdb-rank.json'
+      - 'data/guduo.json'
+      - 'data/douban.json'
+      - 'data/mgtv.json'
+      - 'data/theater.json'
+      - 'data/bangumi.json'
+      - 'data/tmdb.json'
+      - 'data/bili.json'
+      - 'data/mal.json'
+      - 'data/anilist.json'
+      - 'data/trakt.json'
       - 'data/netflix-weekly.json'
   schedule:
     # 每天北京时间中午 12:30 兜底刷新一次 (UTC 时间 04:30)
