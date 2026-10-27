@@ -7,7 +7,7 @@ WidgetMetadata = {
   description: "骨朵/豆瓣/芒果TV/各平台剧场/热门番剧/TMDB榜单/B站/MAL/AniList/Trakt/Netflix周榜 十一源榜单（GitHub Actions 每日抓取，与 VPS 版同构）",
   author: "夏恩",
   site: "https://t.me/MakkaPakkaOvO",
-  version: "1.2.0",
+  version: "1.2.1",
   requiredVersion: "0.0.1",
   globalParams: [
     { name: "baseUrl", title: "数据地址", type: "input", placeholders: [{ title: "List 仓库数据接口", value: "https://raw.githubusercontent.com/xiaen-8/list/main" }] },
@@ -136,6 +136,12 @@ WidgetMetadata = {
 };
 
 const BASE = "https://raw.githubusercontent.com/xiaen-8/list/main";
+// 兼容旧版保存的地址（结尾带 /data 或斜杠）：统一归一化为仓库根
+function apiBase(params) {
+  let b = String((params && params.baseUrl) || BASE).trim().replace(/\/+$/, "");
+  if (b.endsWith("/data")) b = b.slice(0, b.length - 5);
+  return b;
+}
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 const UA_HEADERS = { "User-Agent": UA, "Accept-Language": "zh-CN,zh;q=0.9" };
 
@@ -181,25 +187,25 @@ function paginate(list, page, size = 24) {
 }
 
 async function loadGuduo(params = {}) {
-  const res = await Widget.http.get((params.baseUrl || BASE) + "/data/guduo.json", { headers: UA_HEADERS });
+  const res = await Widget.http.get(apiBase(params) + "/data/guduo.json", { headers: UA_HEADERS });
   const list = (res.data && res.data.categories && res.data.categories[params.category || "剧集"]) || [];
   return paginate(sortItems(list, params.sort), params.page);
 }
 
 async function loadDouban(params = {}) {
-  const res = await Widget.http.get((params.baseUrl || BASE) + "/data/douban.json", { headers: UA_HEADERS });
+  const res = await Widget.http.get(apiBase(params) + "/data/douban.json", { headers: UA_HEADERS });
   const list = (res.data && res.data[params.channel || "tv"]) || [];
   return paginate(sortItems(list, params.sort), params.page);
 }
 
 async function loadMangoTV(params = {}) {
-  const res = await Widget.http.get((params.baseUrl || BASE) + "/data/mgtv.json", { headers: UA_HEADERS });
+  const res = await Widget.http.get(apiBase(params) + "/data/mgtv.json", { headers: UA_HEADERS });
   const list = (res.data && res.data[params.sort_by || "tv"]) || [];
   return paginate(sortItems(list, params.sort), params.page);
 }
 
 async function loadTheater(params = {}) {
-  const res = await Widget.http.get((params.baseUrl || BASE) + "/data/theater.json", { headers: UA_HEADERS });
+  const res = await Widget.http.get(apiBase(params) + "/data/theater.json", { headers: UA_HEADERS });
   const brand = (res.data || {})[params.brand || "迷雾剧场"];
   if (!brand) return [];
   let list = [];
@@ -210,43 +216,43 @@ async function loadTheater(params = {}) {
 }
 
 async function loadBangumi(params = {}) {
-  const res = await Widget.http.get((params.baseUrl || BASE) + "/data/bangumi.json", { headers: UA_HEADERS });
+  const res = await Widget.http.get(apiBase(params) + "/data/bangumi.json", { headers: UA_HEADERS });
   const list = (res.data && res.data.hot_anime) || [];
   return paginate(sortItems(list, params.sort), params.page);
 }
 
 async function loadTmdb(params = {}) {
-  const res = await Widget.http.get((params.baseUrl || BASE) + "/data/tmdb.json", { headers: UA_HEADERS });
+  const res = await Widget.http.get(apiBase(params) + "/data/tmdb.json", { headers: UA_HEADERS });
   const list = (res.data && res.data[params.type || "tv"]) || [];
   return paginate(sortItems(list, params.sort), params.page);
 }
 
 async function loadBili(params = {}) {
-  const res = await Widget.http.get((params.baseUrl || BASE) + "/data/bili.json", { headers: UA_HEADERS });
+  const res = await Widget.http.get(apiBase(params) + "/data/bili.json", { headers: UA_HEADERS });
   const list = (res.data && res.data[params.cat || "bangumi"]) || [];
   return paginate(sortItems(list, params.sort), params.page);
 }
 
 async function loadMAL(params = {}) {
-  const res = await Widget.http.get((params.baseUrl || BASE) + "/data/mal.json", { headers: UA_HEADERS });
+  const res = await Widget.http.get(apiBase(params) + "/data/mal.json", { headers: UA_HEADERS });
   const list = (res.data && res.data.airing) || [];
   return paginate(sortItems(list, params.sort), params.page);
 }
 
 async function loadAniList(params = {}) {
-  const res = await Widget.http.get((params.baseUrl || BASE) + "/data/anilist.json", { headers: UA_HEADERS });
+  const res = await Widget.http.get(apiBase(params) + "/data/anilist.json", { headers: UA_HEADERS });
   const list = (res.data && res.data.trending) || [];
   return paginate(sortItems(list, params.sort), params.page);
 }
 
 async function loadTrakt(params = {}) {
-  const res = await Widget.http.get((params.baseUrl || BASE) + "/data/trakt.json", { headers: UA_HEADERS });
+  const res = await Widget.http.get(apiBase(params) + "/data/trakt.json", { headers: UA_HEADERS });
   const list = (res.data && res.data[params.type || "trending"]) || [];
   return paginate(sortItems(list, params.sort), params.page);
 }
 
 async function loadNetflix(params = {}) {
-  const res = await Widget.http.get((params.baseUrl || BASE) + "/data/netflix-weekly.json", { headers: UA_HEADERS });
+  const res = await Widget.http.get(apiBase(params) + "/data/netflix-weekly.json", { headers: UA_HEADERS });
   const cats = (res.data && res.data.categories) || {};
   const list = cats[params.category || "英语电影"] || [];
   return paginate(sortItems(list, params.sort), params.page);
