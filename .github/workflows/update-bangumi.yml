@@ -40,4 +40,4 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
           git add data/bangumi.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: 自动更新 Bangumi 热榜动漫 🌸" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: 自动更新 Bangumi 热榜动漫 🌸" && git pull --rebase origin main && git push)
