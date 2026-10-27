@@ -45,4 +45,4 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
           git add status.html
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: 更新状态页 📊" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: 更新状态页 📊" && git pull --rebase origin main && git push)
