@@ -42,4 +42,4 @@ jobs:
           # 这里改为提交芒果 TV 产生的数据文件
           git add data/mgtv.json
           # 如果文件有变动则提交，无变动则跳过不报错
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: 自动更新芒果TV热榜数据 🥭" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: 自动更新芒果TV热榜数据 🥭" && git pull --rebase origin main && git push)
