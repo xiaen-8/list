@@ -11,12 +11,16 @@ DATA_DIR = "data"
 OUTPUT_HTML = "status.html"
 
 SOURCES = [
-    ("guduo-hot.json", "骨朵热度"),
-    ("douban-hot.json", "豆瓣热榜"),
-    ("mgtv-hot.json", "芒果TV"),
-    ("theater-data.json", "剧场平台"),
-    ("bangumi-hot.json", "热门番剧"),
-    ("tmdb-rank.json", "TMDB 榜单"),
+    ("guduo.json", "骨朵热度"),
+    ("douban.json", "豆瓣热榜"),
+    ("mgtv.json", "芒果TV"),
+    ("theater.json", "剧场平台"),
+    ("bangumi.json", "热门番剧"),
+    ("tmdb.json", "TMDB 榜单"),
+    ("bili.json", "B站榜单"),
+    ("mal.json", "MAL 热播"),
+    ("anilist.json", "AniList 番剧"),
+    ("trakt.json", "Trakt 榜单"),
     ("netflix-weekly.json", "Netflix 周榜"),
 ]
 
