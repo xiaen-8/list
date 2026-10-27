@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-10-27 18:47:25",
+  "last_updated": "2026-10-28 02:10:22",
   "tv": [
     {
       "id": "301817",
@@ -1264,6 +1264,21 @@
       "genreTitle": "真人秀"
     },
     {
+      "id": "235912",
+      "type": "tmdb",
+      "title": "去“湘”当有味的地方",
+      "description": "湖南卫视、芒果TV美食文旅探访节目《去“湘”当有味的地方》定档，于9月4日起，每周一到周四晚19:30播出。节目每期时长30分钟，汪涵、沈梦辰、吴泽林组成有味探访三人组，网罗湖南全省14个市州的独特美食。一道道美食、一个个美食背后的故事，组成一幅幅湖南各地乡情烟火气的美丽画卷。",
+      "rating": 0.0,
+      "voteCount": 0,
+      "popularity": 6.9813,
+      "releaseDate": "2023-09-04",
+      "lastUpdateDate": "2026-10-21",
+      "posterPath": "/3cPb0J3UFElfjVKpYOmmTZLAw4x.jpg",
+      "backdropPath": "/8ZdT2Wufb6zLPp4kvaEeod5uZ4k.jpg",
+      "mediaType": "tv",
+      "genreTitle": "真人秀"
+    },
+    {
       "id": "94773",
       "type": "tmdb",
       "title": "舞蹈新风暴",
@@ -1339,21 +1354,6 @@
       "genreTitle": "真人秀"
     },
     {
-      "id": "235912",
-      "type": "tmdb",
-      "title": "去“湘”当有味的地方",
-      "description": "湖南卫视、芒果TV美食文旅探访节目《去“湘”当有味的地方》定档，于9月4日起，每周一到周四晚19:30播出。节目每期时长30分钟，汪涵、沈梦辰、吴泽林组成有味探访三人组，网罗湖南全省14个市州的独特美食。一道道美食、一个个美食背后的故事，组成一幅幅湖南各地乡情烟火气的美丽画卷。",
-      "rating": 0.0,
-      "voteCount": 0,
-      "popularity": 6.9813,
-      "releaseDate": "2023-09-04",
-      "lastUpdateDate": "2026-10-21",
-      "posterPath": "/3cPb0J3UFElfjVKpYOmmTZLAw4x.jpg",
-      "backdropPath": "/8ZdT2Wufb6zLPp4kvaEeod5uZ4k.jpg",
-      "mediaType": "tv",
-      "genreTitle": "真人秀"
-    },
-    {
       "id": "281511",
       "type": "tmdb",
       "title": "有你的恋歌",
@@ -1365,6 +1365,21 @@
       "lastUpdateDate": "2026-10-19",
       "posterPath": "/Ri7z7mFfevY6YMOnecoX1zfLZw.jpg",
       "backdropPath": "/shJJIUuocAxe1FRS9V4jPsv201Z.jpg",
+      "mediaType": "tv",
+      "genreTitle": "真人秀"
+    },
+    {
+      "id": "239038",
+      "type": "tmdb",
+      "title": "爱的修学旅行",
+      "description": "邀请四组不同婚龄的夫妻和一组准夫妻代表，展开一场为期18天的家庭关系修学之旅，五组夫妻通过爱的联系修取学分，为亲密关系助力，修满即可毕业。",
+      "rating": 7.0,
+      "voteCount": 1,
+      "popularity": 6.61,
+      "releaseDate": "2023-11-07",
+      "lastUpdateDate": "2026-10-21",
+      "posterPath": "/3mcekQNoJFgciDfKRoKpW7JrD1X.jpg",
+      "backdropPath": "/7qeO3CpGXGQx6AcHmsYm9SOTNIF.jpg",
       "mediaType": "tv",
       "genreTitle": "真人秀"
     },
@@ -1382,21 +1397,6 @@
       "backdropPath": "/eLEBwD8vUlbfo79zG8yx1jdi7fX.jpg",
       "mediaType": "tv",
       "genreTitle": "脱口秀"
-    },
-    {
-      "id": "239038",
-      "type": "tmdb",
-      "title": "爱的修学旅行",
-      "description": "邀请四组不同婚龄的夫妻和一组准夫妻代表，展开一场为期18天的家庭关系修学之旅，五组夫妻通过爱的联系修取学分，为亲密关系助力，修满即可毕业。",
-      "rating": 7.0,
-      "voteCount": 1,
-      "popularity": 6.61,
-      "releaseDate": "2023-11-07",
-      "lastUpdateDate": "2026-10-21",
-      "posterPath": "/3mcekQNoJFgciDfKRoKpW7JrD1X.jpg",
-      "backdropPath": "/7qeO3CpGXGQx6AcHmsYm9SOTNIF.jpg",
-      "mediaType": "tv",
-      "genreTitle": "真人秀"
     },
     {
       "id": "330052",
