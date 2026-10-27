@@ -8,7 +8,7 @@ import datetime
 # --- 配置区 ---
 TMDB_API_KEY = os.environ.get('TMDB_API_KEY')
 DATA_DIR = "data"
-OUTPUT_FILE = os.path.join(DATA_DIR, "mgtv-hot.json")
+OUTPUT_FILE = os.path.join(DATA_DIR, "mgtv.json")
 
 # 芒果TV 片库列表底层 API
 MG_BASE_URL = "https://pianku.api.mgtv.com/rider/list/pcweb/v3"
