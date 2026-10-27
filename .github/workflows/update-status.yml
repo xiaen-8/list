@@ -1,0 +1,44 @@
+name: 📊 Update Status Page
+
+on:
+  # 任一数据源文件被推送后自动重建状态页（status.html 不在 data/ 下，不会自触发）
+  push:
+    paths:
+      - 'data/guduo-hot.json'
+      - 'data/douban-hot.json'
+      - 'data/mgtv-hot.json'
+      - 'data/theater-data.json'
+      - 'data/bangumi-hot.json'
+      - 'data/tmdb-rank.json'
+      - 'data/netflix-weekly.json'
+  schedule:
+    # 每天北京时间中午 12:30 兜底刷新一次 (UTC 时间 04:30)
+    - cron: '30 4 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-status:
+    runs-on: ubuntu-latest
+
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: 📥 检出代码
+        uses: actions/checkout@v4
+
+      - name: 🐍 设置 Python 环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 🚀 生成状态页
+        run: |
+          python scripts/update_status.py
+
+      - name: 📤 提交并推送到 GitHub
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add status.html
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: 更新状态页 📊" && git push)

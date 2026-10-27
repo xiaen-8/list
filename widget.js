@@ -1,16 +1,16 @@
 // 全站榜单（List 仓库版）· fw/rex 聚合模块
-// 数据源： MakkaPakka518/List 仓库 data/*-hot.json（GitHub Actions 每日抓取提交）
-// 使用：在 Forward 里添加本文件的地址即可。5 个子模块：骨朵/豆瓣/芒果TV/各平台剧场/热门番剧
+// 数据源： xiaen-8/list 仓库 data/*.json（GitHub Actions 每日抓取提交）
+// 使用：在 Forward 里添加本文件的地址即可。7 个子模块：骨朵/豆瓣/芒果TV/各平台剧场/热门番剧/TMDB榜单/Netflix周榜
 WidgetMetadata = {
   id: "makka.list.aggregator",
   title: "全站榜单 (List)",
-  version: "1.0.0",
+  version: "1.1.0",
   requiredVersion: "0.0.1",
-  description: "骨朵/豆瓣/芒果TV/各平台剧场/热门番剧 五源榜单（GitHub Actions 每日抓取）",
-  author: "𝙈𝙖𝙠𝙠𝙖𝙋𝙖𝙠𝙠𝙖",
+  description: "骨朵/豆瓣/芒果TV/各平台剧场/热门番剧/TMDB榜单/Netflix周榜 七源榜单（GitHub Actions 每日抓取）",
+  author: "夏恩",
   site: "https://t.me/MakkaPakkaOvO",
   globalParams: [
-    { name: "baseUrl", title: "数据地址", type: "input", placeholders: [{ title: "List 仓库数据接口", value: "https://raw.githubusercontent.com/MakkaPakka518/List/main/data" }] },
+    { name: "baseUrl", title: "数据地址", type: "input", placeholders: [{ title: "List 仓库数据接口", value: "https://raw.githubusercontent.com/xiaen-8/list/main/data" }] },
   ],
   modules: [
     {
@@ -68,10 +68,32 @@ WidgetMetadata = {
         { name: "page", title: "页码", type: "page", startPage: 1 },
       ],
     },
+    {
+      id: "loadTmdbRank",
+      title: "TMDB榜單",
+      functionName: "loadTmdbRank",
+      cacheDuration: 3600,
+      params: [
+        { name: "category", title: "榜單分類", type: "enumeration", value: "本周电影趋势", enumOptions: [{ title: "本周電影趨勢", value: "本周电影趋势" }, { title: "本周劇集趨勢", value: "本周剧集趋势" }, { title: "熱門電影", value: "热门电影" }, { title: "熱門劇集", value: "热门剧集" }, { title: "高分電影", value: "高分电影" }, { title: "高分劇集", value: "高分剧集" }, { title: "正在上映", value: "正在上映" }] },
+        { name: "sort", title: "排序方式", type: "enumeration", value: "default", enumOptions: [{ title: "默認原序", value: "default" }, { title: "最近更新", value: "latestUpdate" }, { title: "最近發佈", value: "latestRelease" }, { title: "熱度最高", value: "hottest" }, { title: "高分優先", value: "highestRating" }] },
+        { name: "page", title: "页码", type: "page", startPage: 1 },
+      ],
+    },
+    {
+      id: "loadNetflix",
+      title: "Netflix周榜",
+      functionName: "loadNetflix",
+      cacheDuration: 3600,
+      params: [
+        { name: "category", title: "榜單分類", type: "enumeration", value: "英语电影", enumOptions: [{ title: "英語電影", value: "英语电影" }, { title: "非英語電影", value: "非英语电影" }, { title: "英語劇集", value: "英语剧集" }, { title: "非英語劇集", value: "非英语剧集" }] },
+        { name: "sort", title: "排序方式", type: "enumeration", value: "default", enumOptions: [{ title: "默認原序", value: "default" }, { title: "最近更新", value: "latestUpdate" }, { title: "最近發佈", value: "latestRelease" }, { title: "熱度最高", value: "hottest" }, { title: "高分優先", value: "highestRating" }] },
+        { name: "page", title: "页码", type: "page", startPage: 1 },
+      ],
+    },
   ],
 };
 
-const BASE = "https://raw.githubusercontent.com/MakkaPakka518/List/main/data";
+const BASE = "https://raw.githubusercontent.com/xiaen-8/list/main/data";
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 const UA_HEADERS = { "User-Agent": UA, "Accept-Language": "zh-CN,zh;q=0.9" };
 
@@ -143,5 +165,17 @@ async function loadTheater(params = {}) {
 async function loadBangumi(params = {}) {
   const res = await Widget.http.get((params.baseUrl || BASE) + "/bangumi-hot.json", { headers: UA_HEADERS });
   const list = (res.data && res.data.hot_anime) || [];
+  return paginate(sortItems(list, params.sort), params.page);
+}
+
+async function loadTmdbRank(params = {}) {
+  const res = await Widget.http.get((params.baseUrl || BASE) + "/tmdb-rank.json", { headers: UA_HEADERS });
+  const list = (res.data && res.data.categories && res.data.categories[params.category || "本周电影趋势"]) || [];
+  return paginate(sortItems(list, params.sort), params.page);
+}
+
+async function loadNetflix(params = {}) {
+  const res = await Widget.http.get((params.baseUrl || BASE) + "/netflix-weekly.json", { headers: UA_HEADERS });
+  const list = (res.data && res.data.categories && res.data.categories[params.category || "英语电影"]) || [];
   return paginate(sortItems(list, params.sort), params.page);
 }
