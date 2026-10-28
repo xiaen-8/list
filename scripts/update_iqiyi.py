@@ -46,13 +46,16 @@ def build_item(hit, media):
 
 async def tmdb_search(session, media, title):
     url = f"https://api.themoviedb.org/3/search/{media}"
-    try:
-        async with session.get(url, params=tmdb_params({"query": title}), headers=tmdb_headers(), timeout=aiohttp.ClientTimeout(total=30)) as r:
-            if r.status != 200: return []
-            d = await r.json()
-            return d.get("results") or []
-    except Exception:
-        return []
+    for attempt in range(3):
+        try:
+            async with session.get(url, params=tmdb_params({"query": title}), headers=tmdb_headers(), timeout=aiohttp.ClientTimeout(total=30)) as r:
+                if r.status == 200:
+                    d = await r.json()
+                    return d.get("results") or []
+        except Exception:
+            pass
+        await asyncio.sleep(1.5 * (attempt + 1))
+    return []
 
 async def strict_match(session, title, year=None):
     """片名精确相等（译名或原名）且全局唯一才收；给了年份还须年份一致。宁缺毋滥。"""
