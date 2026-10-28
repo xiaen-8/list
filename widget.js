@@ -4,10 +4,10 @@
 WidgetMetadata = {
   id: "makka.list.aggregator",
   title: "全站榜单 (List)",
-  description: "骨朵/豆瓣/芒果TV/各平台剧场/热门番剧/TMDB榜单/B站/MAL/AniList/Trakt/Netflix周榜/优酷片库/爱奇艺片库/腾讯WeTV 十四源榜单（GitHub Actions 每日抓取）",
+  description: "骨朵/豆瓣/芒果TV/各平台剧场/热门番剧/TMDB榜单/B站/MAL/AniList/Trakt/Netflix周榜/优酷片库/爱奇艺片库/腾讯WeTV/芒果片库 十五源榜单（GitHub Actions 每日抓取）",
   author: "夏恩",
   site: "https://t.me/MakkaPakkaOvO",
-  version: "1.3.0",
+  version: "1.3.1",
   requiredVersion: "0.0.1",
   globalParams: [
     { name: "baseUrl", title: "数据地址", type: "input", placeholders: [{ title: "List 仓库数据接口", value: "https://raw.githubusercontent.com/xiaen-8/list/main" }] },
@@ -165,6 +165,17 @@ WidgetMetadata = {
       { name: "page", title: "页码", type: "page", startPage: 1 },
       ],
     },
+    {
+      id: "loadMgtvPc",
+      title: "芒果片库",
+      functionName: "loadMgtvPc",
+      cacheDuration: 3600,
+      params: [
+      { name: "category", title: "分類", type: "enumeration", value: "tv", enumOptions: [{ title: "電視劇", value: "tv" },{ title: "電影", value: "movie" },{ title: "綜藝", value: "show" },{ title: "動漫", value: "anime" },{ title: "紀錄片", value: "doc" },{ title: "少兒", value: "kids" }] },
+      { name: "sort", title: "排序方式", type: "enumeration", value: "default", enumOptions: [{ title: "默認原序", value: "default" },{ title: "最近更新", value: "latestUpdate" },{ title: "最近發佈", value: "latestRelease" },{ title: "熱度最高", value: "hottest" },{ title: "流行趨勢", value: "trend" },{ title: "高分優先", value: "highestRating" }] },
+      { name: "page", title: "页码", type: "page", startPage: 1 },
+      ],
+    },
   ],
 };
 
@@ -305,6 +316,12 @@ async function loadIqiyi(params = {}) {
 
 async function loadWetv(params = {}) {
   const res = await Widget.http.get(apiBase(params) + "/data/wetv.json", { headers: UA_HEADERS });
+  const list = (res.data && res.data[params.category || "tv"]) || [];
+  return paginate(sortItems(list, params.sort), params.page);
+}
+
+async function loadMgtvPc(params = {}) {
+  const res = await Widget.http.get(apiBase(params) + "/data/mgtvpc.json", { headers: UA_HEADERS });
   const list = (res.data && res.data[params.category || "tv"]) || [];
   return paginate(sortItems(list, params.sort), params.page);
 }
