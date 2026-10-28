@@ -1,8 +1,6 @@
 name: 📺 Update WeTV Library
 
 on:
-  schedule:
-    - cron: '40 4 * * *'
   workflow_dispatch:
 
 jobs:
