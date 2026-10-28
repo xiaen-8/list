@@ -25,6 +25,7 @@ SOURCES = [
     ("youku.json", "优酷片库"),
     ("iqiyi.json", "爱奇艺片库"),
     ("wetv.json", "腾讯WeTV"),
+    ("mgtvpc.json", "芒果片库"),
 ]
 
 
