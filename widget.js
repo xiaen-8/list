@@ -4,10 +4,10 @@
 WidgetMetadata = {
   id: "makka.list.aggregator",
   title: "全站榜单 (List)",
-  description: "骨朵/豆瓣/芒果TV/各平台剧场/热门番剧/TMDB榜单/B站/MAL/AniList/Trakt/Netflix周榜 十一源榜单（GitHub Actions 每日抓取，与 VPS 版同构）",
+  description: "骨朵/豆瓣/芒果TV/各平台剧场/热门番剧/TMDB榜单/B站/MAL/AniList/Trakt/Netflix周榜/优酷片库/爱奇艺片库/腾讯WeTV 十四源榜单（GitHub Actions 每日抓取）",
   author: "夏恩",
   site: "https://t.me/MakkaPakkaOvO",
-  version: "1.2.1",
+  version: "1.3.0",
   requiredVersion: "0.0.1",
   globalParams: [
     { name: "baseUrl", title: "数据地址", type: "input", placeholders: [{ title: "List 仓库数据接口", value: "https://raw.githubusercontent.com/xiaen-8/list/main" }] },
@@ -128,6 +128,39 @@ WidgetMetadata = {
       cacheDuration: 3600,
       params: [
       { name: "category", title: "分类", type: "enumeration", value: "英语电影", enumOptions: [{ title: "英語電影", value: "英语电影" },{ title: "非英語電影", value: "非英语电影" },{ title: "英語劇集", value: "英语剧集" },{ title: "非英語劇集", value: "非英语剧集" }] },
+      { name: "sort", title: "排序方式", type: "enumeration", value: "default", enumOptions: [{ title: "默認原序", value: "default" },{ title: "最近更新", value: "latestUpdate" },{ title: "最近發佈", value: "latestRelease" },{ title: "熱度最高", value: "hottest" },{ title: "流行趨勢", value: "trend" },{ title: "高分優先", value: "highestRating" }] },
+      { name: "page", title: "页码", type: "page", startPage: 1 },
+      ],
+    },
+    {
+      id: "loadYouku",
+      title: "优酷片库",
+      functionName: "loadYouku",
+      cacheDuration: 3600,
+      params: [
+      { name: "category", title: "分類", type: "enumeration", value: "tv", enumOptions: [{ title: "電視劇", value: "tv" },{ title: "電影", value: "movie" },{ title: "綜藝", value: "show" },{ title: "動漫", value: "anime" },{ title: "紀錄片", value: "doc" },{ title: "少兒", value: "kids" }] },
+      { name: "sort", title: "排序方式", type: "enumeration", value: "default", enumOptions: [{ title: "默認原序", value: "default" },{ title: "最近更新", value: "latestUpdate" },{ title: "最近發佈", value: "latestRelease" },{ title: "熱度最高", value: "hottest" },{ title: "流行趨勢", value: "trend" },{ title: "高分優先", value: "highestRating" }] },
+      { name: "page", title: "页码", type: "page", startPage: 1 },
+      ],
+    },
+    {
+      id: "loadIqiyi",
+      title: "爱奇艺片库",
+      functionName: "loadIqiyi",
+      cacheDuration: 3600,
+      params: [
+      { name: "category", title: "分類", type: "enumeration", value: "tv", enumOptions: [{ title: "電視劇", value: "tv" },{ title: "電影", value: "movie" },{ title: "紀錄片", value: "doc" },{ title: "動漫", value: "anime" }] },
+      { name: "sort", title: "排序方式", type: "enumeration", value: "default", enumOptions: [{ title: "默認原序", value: "default" },{ title: "最近更新", value: "latestUpdate" },{ title: "最近發佈", value: "latestRelease" },{ title: "熱度最高", value: "hottest" },{ title: "流行趨勢", value: "trend" },{ title: "高分優先", value: "highestRating" }] },
+      { name: "page", title: "页码", type: "page", startPage: 1 },
+      ],
+    },
+    {
+      id: "loadWetv",
+      title: "腾讯WeTV",
+      functionName: "loadWetv",
+      cacheDuration: 3600,
+      params: [
+      { name: "category", title: "分類", type: "enumeration", value: "tv", enumOptions: [{ title: "電視劇", value: "tv" },{ title: "電影", value: "movie" },{ title: "綜藝", value: "show" },{ title: "動漫", value: "anime" }] },
       { name: "sort", title: "排序方式", type: "enumeration", value: "default", enumOptions: [{ title: "默認原序", value: "default" },{ title: "最近更新", value: "latestUpdate" },{ title: "最近發佈", value: "latestRelease" },{ title: "熱度最高", value: "hottest" },{ title: "流行趨勢", value: "trend" },{ title: "高分優先", value: "highestRating" }] },
       { name: "page", title: "页码", type: "page", startPage: 1 },
       ],
@@ -255,5 +288,23 @@ async function loadNetflix(params = {}) {
   const res = await Widget.http.get(apiBase(params) + "/data/netflix-weekly.json", { headers: UA_HEADERS });
   const cats = (res.data && res.data.categories) || {};
   const list = cats[params.category || "英语电影"] || [];
+  return paginate(sortItems(list, params.sort), params.page);
+}
+
+async function loadYouku(params = {}) {
+  const res = await Widget.http.get(apiBase(params) + "/data/youku.json", { headers: UA_HEADERS });
+  const list = (res.data && res.data[params.category || "tv"]) || [];
+  return paginate(sortItems(list, params.sort), params.page);
+}
+
+async function loadIqiyi(params = {}) {
+  const res = await Widget.http.get(apiBase(params) + "/data/iqiyi.json", { headers: UA_HEADERS });
+  const list = (res.data && res.data[params.category || "tv"]) || [];
+  return paginate(sortItems(list, params.sort), params.page);
+}
+
+async function loadWetv(params = {}) {
+  const res = await Widget.http.get(apiBase(params) + "/data/wetv.json", { headers: UA_HEADERS });
+  const list = (res.data && res.data[params.category || "tv"]) || [];
   return paginate(sortItems(list, params.sort), params.page);
 }
