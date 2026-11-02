@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 """腾讯 WeTV 片库数据源（xiaen-8/list）
 
-来源：WeTV（wetv.vip，腾讯视频海外版）简体站频道页 SSR：
-https://wetv.vip/zh-cn?id=<频道id> 的 __NEXT_DATA__ 里带各模块片单
-（电视剧 10259 / 电影 10261 / 综艺 10042 / 动漫 10262），每频道取前 60 个去重标题。
+来源：WeTV（wetv.vip，腾讯视频海外版）简体站频道页：
+https://wetv.vip/zh-cn?id=<频道id>，旧版前端在 __NEXT_DATA__ 里带各模块片单，
+新版前端（App Router）在 self.__next_f 的 RSC 流里带同一份 modules 数据，两种都解析。
+频道 id（2026-11-02 换新，旧 id 10259/10261/10042/10262 已退役、只回空壳）：
+电视剧 10314 / 电影 10316 / 综艺 10236 / 动漫 10317。每频道取前 60 个去重标题。
 标题先做确定性清洗（去「（未剪辑版）」类括号后缀、去「第X季/第X部」尾巴）再匹配。
 TMDB 富化：片名精确匹配且全局唯一才收，宁缺毋滥（与优酷源同口径）。
 密钥：TMDB_API_KEY（仓库 secrets 已有）。
@@ -12,7 +14,7 @@ TMDB 富化：片名精确匹配且全局唯一才收，宁缺毋滥（与优酷
 """
 import re, urllib.request, urllib.error
 
-import asyncio, json, os, datetime
+import asyncio, json, os, datetime, time
 import aiohttp
 
 TMDB_API_KEY = os.environ.get("TMDB_API_KEY") or ""
@@ -76,23 +78,25 @@ async def strict_match(session, title, year=None):
     return build_item(hit, media)
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
-CHANS = {"tv": "10259", "movie": "10261", "show": "10042", "anime": "10262"}
+CHANS = {"tv": "10314", "movie": "10316", "show": "10236", "anime": "10317"}
 MAX_TITLES = 60
 
 def clean_title(t):
     t = (t or "").strip()
+    t = re.sub(r"｜.*$", "", t).strip()                          # 去「｜宣传语」尾巴（新版片单常见）
     t = re.sub(r"[（(][^）)]*[）)]\s*$", "", t).strip()          # 去尾部括号后缀（未剪辑版 等）
     t = re.sub(r"第[一二三四五六七八九十0-9]+[季部]\s*$", "", t).strip()  # 去季/部尾巴
+    t = re.sub(r"\s*S\d+\s*$", "", t).strip()                   # 去 S4 这类季尾巴
     return t
 
-def fetch_channel(chid):
-    url = f"https://wetv.vip/zh-cn?id={chid}"
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        html = r.read().decode("utf-8", "ignore")
+def _titles_from_next_data(html):
     m = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', html, re.S)
     if not m: return []
-    data = json.loads(m.group(1))["props"]["pageProps"]["data"]
+    try:
+        data = json.loads(m.group(1))["props"]["pageProps"]["data"]
+    except Exception:
+        return []
+    if not isinstance(data, dict): return []
     titles, seen = [], set()
     for mod in data.get("modules") or []:
         name = mod.get("name") or ""
@@ -104,6 +108,41 @@ def fetch_channel(chid):
             seen.add(t); titles.append(t)
             if len(titles) >= MAX_TITLES: return titles
     return titles
+
+def _titles_from_flight(html):
+    # 新版 App Router：片单在 self.__next_f.push 的 RSC 流字符串里，解码后结构同为 modules->items
+    parts = re.findall(r'self\.__next_f\.push\(\[1,("(?:\\.|[^"\\])*")\]\)', html, re.S)
+    if not parts: return []
+    dec = []
+    for p in parts:
+        try: dec.append(json.loads(p))
+        except Exception: pass
+    blob = "\n".join(dec)
+    if '"isNewHomePage":true' in blob: return []  # 新版前端偶尔忽略 ?id= 直接回首页，首页推荐不能当频道片单
+    titles, seen = [], set()
+    for t in re.findall(r'"type":"ALBUM","title":"([^"]+)"', blob):
+        t = clean_title(t)
+        if not t or t in seen: continue
+        if re.fullmatch(r"\d{4}", t): continue
+        seen.add(t); titles.append(t)
+        if len(titles) >= MAX_TITLES: break
+    return titles
+
+def fetch_channel(chid):
+    # WeTV 新旧两版前端正在分流：同一地址可能回旧版 SSR 或新版 RSC 流，两种都解析；
+    # 偶尔还会回空壳页，任一方式拿到片单即返回，都没拿到就重试几次再放弃。
+    url = f"https://wetv.vip/zh-cn?id={chid}"
+    for attempt in range(5):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=60) as r:
+                html = r.read().decode("utf-8", "ignore")
+            titles = _titles_from_next_data(html) or _titles_from_flight(html)
+            if titles: return titles
+        except Exception:
+            pass
+        time.sleep(2)
+    return []
 
 async def main():
     result = {"last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
