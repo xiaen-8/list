@@ -130,25 +130,43 @@ def _titles_from_flight(html):
 
 def fetch_channel(chid):
     # WeTV 新旧两版前端正在分流：同一地址可能回旧版 SSR 或新版 RSC 流，两种都解析；
-    # 偶尔还会回空壳页，任一方式拿到片单即返回，都没拿到就重试几次再放弃。
+    # 还会间歇回坏变体：__NEXT_DATA__ 里 data={} 的空壳页、或忽略 ?id= 的首页（RSC 流靠
+    # isNewHomePage 守卫挡掉）。坏变体经 CloudFront 缓存约 68 秒（Cache-Control max-age=68），
+    # 同一频道会在一两分钟窗口内持续回坏变体、过后自愈，四频道轮流中招（2026-11-05 实测：
+    # 12:18 定时跑 movie/anime 空、午间复测又换 tv/show 空）。频道 id 未退役——每个频道都
+    # 实测拿到过完整片单（tv 49 / movie 53 / show 30 / anime 30）。任一方式拿到片单即返回；
+    # 单轮内递增间隔重试，都没拿到交给 main 的跨轮补抓（间隔须跨过缓存窗口）。
     url = f"https://wetv.vip/zh-cn?id={chid}"
-    for attempt in range(5):
+    for attempt in range(6):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA})
             with urllib.request.urlopen(req, timeout=60) as r:
                 html = r.read().decode("utf-8", "ignore")
             titles = _titles_from_next_data(html) or _titles_from_flight(html)
             if titles: return titles
-        except Exception:
-            pass
-        time.sleep(2)
+            print(f"wetv ch {chid}: attempt {attempt + 1} got empty variant ({len(html)} bytes)", flush=True)
+        except Exception as e:
+            print(f"wetv ch {chid}: attempt {attempt + 1} error {type(e).__name__}", flush=True)
+        time.sleep(4 + attempt * 2)
     return []
 
 async def main():
     result = {"last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+    # 先把四频道片单抓齐：首轮没拿到的频道等 75 秒、再 90 秒各补抓一轮，
+    # 让重试跨过坏变体的 CDN 缓存窗口（约 68 秒），避免整频道 raw=0。
+    titles_map = {}
+    for key, chid in CHANS.items():
+        titles_map[key] = fetch_channel(chid)
+    for wait in (75, 90):
+        missing = [(k, c) for k, c in CHANS.items() if not titles_map[k]]
+        if not missing: break
+        print(f"wetv refetch after {wait}s: {[k for k, _ in missing]}", flush=True)
+        time.sleep(wait)
+        for key, chid in missing:
+            titles_map[key] = fetch_channel(chid)
     async with aiohttp.ClientSession() as session:
         for key, chid in CHANS.items():
-            titles = fetch_channel(chid)
+            titles = titles_map[key]
             items = []
             for t in titles:
                 it = await strict_match(session, t)
