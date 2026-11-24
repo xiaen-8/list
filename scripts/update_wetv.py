@@ -3,8 +3,10 @@
 """腾讯 WeTV 片库数据源（xiaen-8/list）
 
 来源：WeTV（wetv.vip，腾讯视频海外版）简体站频道页：
-https://wetv.vip/zh-cn?id=<频道id>，旧版前端在 __NEXT_DATA__ 里带各模块片单，
-新版前端（App Router）在 self.__next_f 的 RSC 流里带同一份 modules 数据，两种都解析。
+https://wetv.vip/zh-cn/channel/<频道id>?id=<频道id>（2026-11-24 起旧地址
+/zh-cn?id=<频道id> 只回首页壳，频道页改走 /channel/<id> 路径，id 本身没变）。
+旧版前端在 __NEXT_DATA__ 里带各模块片单，新版前端（App Router）在
+self.__next_f 的 RSC 流里带同一份 modules 数据，两种都解析。
 频道 id（2026-11-02 换新，旧 id 10259/10261/10042/10262 已退役、只回空壳）：
 电视剧 10314 / 电影 10316 / 综艺 10236 / 动漫 10317。每频道取前 60 个去重标题。
 标题先做确定性清洗（去「（未剪辑版）」类括号后缀、去「第X季/第X部」尾巴）再匹配。
@@ -109,8 +111,10 @@ def _titles_from_next_data(html):
             if len(titles) >= MAX_TITLES: return titles
     return titles
 
-def _titles_from_flight(html):
-    # 新版 App Router：片单在 self.__next_f.push 的 RSC 流字符串里，解码后结构同为 modules->items
+def _titles_from_flight(html, chid=None):
+    # 新版 App Router：片单在 self.__next_f.push 的 RSC 流字符串里，解码后结构同为 modules->items。
+    # 2026-11-24 起流里内层 JSON 又多套了一层转义（解一层后仍是 \" 形式），故再统一
+    # 去一层转义得到 blob2，在 blob2 上取数；旧变体解一层即是明文，blob2 与之等价、无副作用。
     parts = re.findall(r'self\.__next_f\.push\(\[1,("(?:\\.|[^"\\])*")\]\)', html, re.S)
     if not parts: return []
     dec = []
@@ -118,9 +122,18 @@ def _titles_from_flight(html):
         try: dec.append(json.loads(p))
         except Exception: pass
     blob = "\n".join(dec)
-    if '"isNewHomePage":true' in blob: return []  # 新版前端偶尔忽略 ?id= 直接回首页，首页推荐不能当频道片单
+    blob2 = blob.replace('\\"', '"')
+    # 首页守卫（2026-11-24 改口径）：isNewHomePage 已变成全站配置位、频道页里也恒为 true，
+    # 不能再拿它判首页。改认 channelId：真频道页带 "channelId":<本频道id>，首页/首页壳
+    # 恒为 1001。blob 里出现 channelId 且没有一个等于本频道 id → 是首页壳，拒收；
+    # 完全没有 channelId 的旧变体才回落到 isNewHomePage 守卫。
+    chan_ids = re.findall(r'"channelId":\s*"?(\d+)"?', blob2)
+    if chan_ids:
+        if chid is not None and str(chid) not in chan_ids: return []
+    elif '"isNewHomePage":true' in blob2:
+        return []
     titles, seen = [], set()
-    for t in re.findall(r'"type":"ALBUM","title":"([^"]+)"', blob):
+    for t in re.findall(r'"type":"ALBUM","title":"([^"]+)"', blob2):
         t = clean_title(t)
         if not t or t in seen: continue
         if re.fullmatch(r"\d{4}", t): continue
@@ -130,19 +143,19 @@ def _titles_from_flight(html):
 
 def fetch_channel(chid):
     # WeTV 新旧两版前端正在分流：同一地址可能回旧版 SSR 或新版 RSC 流，两种都解析；
-    # 还会间歇回坏变体：__NEXT_DATA__ 里 data={} 的空壳页、或忽略 ?id= 的首页（RSC 流靠
-    # isNewHomePage 守卫挡掉）。坏变体经 CloudFront 缓存约 68 秒（Cache-Control max-age=68），
+    # 还会间歇回坏变体：__NEXT_DATA__ 里 data={} 的空壳页、或回首页壳（RSC 流靠
+    # channelId 守卫挡掉，见 _titles_from_flight）。坏变体经 CloudFront 缓存约 68 秒（Cache-Control max-age=68），
     # 同一频道会在一两分钟窗口内持续回坏变体、过后自愈，四频道轮流中招（2026-11-05 实测：
     # 12:18 定时跑 movie/anime 空、午间复测又换 tv/show 空）。频道 id 未退役——每个频道都
     # 实测拿到过完整片单（tv 49 / movie 53 / show 30 / anime 30）。任一方式拿到片单即返回；
     # 单轮内递增间隔重试，都没拿到交给 main 的跨轮补抓（间隔须跨过缓存窗口）。
-    url = f"https://wetv.vip/zh-cn?id={chid}"
+    url = f"https://wetv.vip/zh-cn/channel/{chid}?id={chid}"
     for attempt in range(6):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA})
             with urllib.request.urlopen(req, timeout=60) as r:
                 html = r.read().decode("utf-8", "ignore")
-            titles = _titles_from_next_data(html) or _titles_from_flight(html)
+            titles = _titles_from_next_data(html) or _titles_from_flight(html, chid)
             if titles: return titles
             print(f"wetv ch {chid}: attempt {attempt + 1} got empty variant ({len(html)} bytes)", flush=True)
         except Exception as e:
